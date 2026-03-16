@@ -9,6 +9,18 @@ export function safe(text: string | null | undefined): string {
   return text ? sanitize(text) : '';
 }
 
+/** Parse pros/cons which may be a JSON array string, newline-separated string, or plain array */
+export function parseList(value: string | string[] | null | undefined): string[] {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.map(s => safe(String(s))).filter(Boolean);
+  const str = safe(value);
+  try {
+    const parsed = JSON.parse(str);
+    if (Array.isArray(parsed)) return parsed.map(s => String(s)).filter(Boolean);
+  } catch { /* not JSON */ }
+  return str.split('\n').filter(Boolean);
+}
+
 export function formatCount(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 100_000) return `${Math.round(n / 1_000)}K`;
@@ -208,19 +220,19 @@ export function renderCaskDetail(detail: CaskDetail) {
       lines.push(chalk.white(whatItDoes));
     }
 
-    const pros = safe(review.pros);
-    if (pros) {
+    const prosList = parseList(review.pros);
+    if (prosList.length) {
       lines.push('');
       lines.push(chalk.green.bold('Pros:'));
-      for (const pro of pros.split('\n').filter(Boolean)) {
+      for (const pro of prosList) {
         lines.push(chalk.green(`  + ${pro.replace(/^[•\-+]\s*/, '')}`));
       }
     }
 
-    const cons = safe(review.cons);
-    if (cons) {
+    const consList = parseList(review.cons);
+    if (consList.length) {
       lines.push(chalk.red.bold('Cons:'));
-      for (const con of cons.split('\n').filter(Boolean)) {
+      for (const con of consList) {
         lines.push(chalk.red(`  - ${con.replace(/^[•\-+]\s*/, '')}`));
       }
     }

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Box, Text, useInput, useApp } from 'ink';
-import { safe, formatCount } from '../lib/ui.ts';
+import { safe, formatCount, parseList } from '../lib/ui.ts';
 import type { Cask, TrendingCask, CaskDetail } from '../types.ts';
 
 interface CaskBrowserProps {
@@ -259,19 +259,19 @@ function DetailView({ detail }: { detail: CaskDetail }) {
           <Text bold dimColor>-- AI Review --</Text>
           <Text>{safe(review.summary)}</Text>
 
-          {review.pros && (
+          {parseList(review.pros).length > 0 && (
             <Box flexDirection="column" paddingTop={1}>
               <Text bold color="green">Pros:</Text>
-              {safe(review.pros).split('\n').filter(Boolean).map((p, i) => (
+              {parseList(review.pros).map((p, i) => (
                 <Text key={i} color="green">  + {p.replace(/^[•\-+]\s*/, '')}</Text>
               ))}
             </Box>
           )}
 
-          {review.cons && (
+          {parseList(review.cons).length > 0 && (
             <Box flexDirection="column">
               <Text bold color="red">Cons:</Text>
-              {safe(review.cons).split('\n').filter(Boolean).map((c, i) => (
+              {parseList(review.cons).map((c, i) => (
                 <Text key={i} color="red">  - {c.replace(/^[•\-+]\s*/, '')}</Text>
               ))}
             </Box>
