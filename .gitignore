@@ -27,10 +27,11 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .cache
 *.tsbuildinfo
 
-# IDEs
+# IDEs and AI config
 .idea
 .cursor
 .vscode
+CLAUDE.md
 
 # Finder (MacOS) folder config
 .DS_Store
